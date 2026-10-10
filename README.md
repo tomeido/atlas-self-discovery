@@ -42,6 +42,14 @@ python3 -m http.server 8000 --directory dist
 
 `dist/` 전체를 함께 정적 호스팅하면 됩니다. Google Fonts를 불러오며, 연결되지 않으면 시스템 글꼴을 사용합니다.
 
+## Vercel 배포
+
+이 저장소를 Vercel 프로젝트에 연결합니다. 저장소 루트의 `vercel.json`이 `dist`를 배포 폴더로 지정하고, 프레임워크·설치·빌드 단계를 생략합니다. 앱은 이미 작성된 HTML/CSS/JavaScript 파일로 구성되어 있습니다.
+
+Vercel의 **Root Directory는 저장소 루트(기본값)**로 유지하세요. `dist`를 Root Directory로 중복 지정할 필요는 없습니다. 연결된 `main` 브랜치의 변경은 Vercel에서 자동으로 재배포합니다.
+
+첫 화면에 404가 나오고 `/dist/index.html`만 열린다면 저장소 루트가 출력 폴더로 배포된 상태입니다. 최신 `vercel.json`이 포함된 커밋을 재배포하고 Output Directory가 `dist`인지 확인하세요.
+
 ## 검증
 
 Node.js와 Python 3으로 다음을 실행합니다.
