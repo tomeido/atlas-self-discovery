@@ -1,0 +1,1 @@
+{"name":"atlas-self-discovery","private":true,"type":"module","scripts":{"check":"node validate.mjs"}}

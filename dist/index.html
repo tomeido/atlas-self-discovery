@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ATLAS · 성격과 재능의 지도</title><meta name="description" content="400개 자기보고 문항과 실제 수행, 난제 해결, 행동 증거를 함께 살펴보는 심층 자기탐색 검사.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d1522'/%3E%3Cpath d='M7 24 16 6 25 24M11 18h10' fill='none' stroke='%2397e2ff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><a class="brand" href="#survey"><span class="brandmark">A</span><span>ATLAS<small>성격과 재능의 지도</small></span></a><div class="header-right"><span id="save-status" role="status">이 브라우저에 자동 저장</span><button id="export" class="quiet">답변 내보내기</button></div></header>
+<div class="shell"><aside><div class="side-caption">내 탐색 기록 <span>01 / 연구용 초안</span></div><nav aria-label="검사 영역"><button data-view="survey" class="nav active"><span>01</span> 성격과 사고 습관 <b id="survey-count">0 / 400</b></button><button data-view="performance" class="nav"><span>02</span> 실제 수행 과제 <b id="performance-count">0 / 36</b></button><button data-view="frontier" class="nav"><span>03</span> 난제 해결 작업실 <b id="frontier-count">0 / 8</b></button><button data-view="evidence" class="nav"><span>04</span> 행동 증거와 관찰</button><button data-view="results" class="nav"><span>05</span> 나의 결과 지도</button><button data-view="method" class="nav"><span>06</span> 설계와 해석 근거</button></nav><div class="side-bottom"><p>정답을 잘 고르는 성격은 없습니다. 최근 6개월의 실제 행동으로 답하세요.</p><button id="import" class="quiet">이전 답변 불러오기</button><input id="import-file" type="file" accept="application/json" hidden><button id="new-run" class="quiet">새 회차 시작</button></div></aside><main id="main" aria-live="polite"><p class="loading">문항을 준비하고 있습니다…</p></main></div>
+<div id="toast" role="status" hidden></div><script type="module" src="app.js"></script>
+</body></html>

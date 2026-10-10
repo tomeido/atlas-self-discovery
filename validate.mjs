@@ -1,0 +1,25 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {freshState,facetScore,scoreFacets,taskSummary,qualitySummary,buildChecks,validateImport,snapshot} from './dist/core.js';
+const read=n=>JSON.parse(fs.readFileSync(`dist/${n}.json`,'utf8'));
+const pb=read('personality-bank'),tb=read('talent-bank'),facets=[...pb.facets,...tb],tasks=read('performance-bank'),challenges=read('frontier-challenges'),method=read('methodology'),checks=buildChecks(facets);
+assert.equal(facets.length,50);assert.equal(tasks.length,36);assert.equal(challenges.length,8);assert.equal(checks.length,12);
+const ids=new Set();for(const f of facets){for(const key of ['id','group','label','description','high','low','experiment'])assert.equal(typeof f[key],'string');assert.equal(f.items.length,8);assert.equal(f.items.filter(i=>i.reverse).length,2);for(const i of f.items){assert(!ids.has(i.id),'duplicate ID');ids.add(i.id);assert.equal(typeof i.text,'string');assert.equal(typeof i.reverse,'boolean');}}assert.equal(ids.size,400);
+for(const t of tasks){assert.equal(t.options.length,4);assert.equal(new Set(t.options).size,4);assert(Number.isInteger(t.correct)&&t.correct>=0&&t.correct<4);assert(t.explanation&&t.prompt);}
+for(const domain of ['logic','quantitative','spatial','verbal','causal','calibration'])assert.equal(tasks.filter(t=>t.domain===domain).length,6);
+for(let c=0;c<4;c++)assert.equal(tasks.filter(t=>t.correct===c).length,9);
+assert(method.sources.length>=5);for(const c of challenges)assert(c.rubric.length>0&&c.constraints.length>0);
+let state=freshState();assert.equal(scoreFacets(facets,state).filter(f=>f.score!==null).length,0);
+const f=facets[0];for(const i of f.items)state.answers[i.id]=i.reverse?1:7;assert.equal(facetScore(f,state.answers).score,100);
+for(const i of f.items)state.answers[i.id]=i.reverse?7:1;assert.equal(facetScore(f,state.answers).score,0);
+for(const i of f.items)state.answers[i.id]=4;assert.equal(facetScore(f,state.answers).score,50);
+delete state.answers[f.items[0].id];delete state.answers[f.items[1].id];assert.equal(facetScore(f,state.answers).score,50);state.answers[f.items[2].id]=0;assert.equal(facetScore(f,state.answers).score,null);assert.equal(facetScore(f,state.answers).unknown,1);
+state=freshState();for(const t of tasks){state.taskAnswers[t.id]=t.correct;state.taskConfidence[t.id]=100;}assert.equal(taskSummary(tasks,state).correct,36);assert.equal(taskSummary(tasks,state).brier,0);
+for(const t of tasks)state.taskAnswers[t.id]=(t.correct+1)%4;assert.equal(taskSummary(tasks,state).correct,0);assert.equal(taskSummary(tasks,state).brier,1);
+delete state.taskConfidence[tasks[0].id];delete state.taskAnswers[tasks[1].id];assert.equal(taskSummary(tasks,state).n,35);assert.equal(taskSummary(tasks,state).confidenceN,34);
+state=freshState();for(const c of checks){if(c.expected!==undefined)state.answers[c.id]=c.expected;else{state.answers[c.original]=3;state.answers[c.id]=3;}}const q=qualitySummary(state,checks);assert.equal(q.attentionMismatch,0);assert.equal(q.pairN,8);assert.equal(q.meanPairDifference,0);
+state.challenges[challenges[0].id]={text:'<script>unsafe</script>',ratings:{0:3}};state.evidence.systems='완성물 사례';state.context.sleep='평소와 비슷함';state.previous=snapshot(facets,tasks,state);
+const restored=validateImport(JSON.parse(JSON.stringify(state)),facets,tasks,challenges,checks);assert.deepEqual(restored.answers,state.answers);assert.equal(restored.challenges[challenges[0].id].text,'<script>unsafe</script>');assert.equal(restored.previous.facets.length,50);
+assert.throws(()=>validateImport({...state,answers:{wrong_id:5}},facets,tasks,challenges,checks));assert.throws(()=>validateImport({...state,taskAnswers:{[tasks[0].id]:9}},facets,tasks,challenges,checks));assert.throws(()=>validateImport({...state,bankVersion:'bad'},facets,tasks,challenges,checks));
+const html=fs.readFileSync('dist/index.html','utf8');assert(html.includes('lang="ko"'));for(const asset of ['app.js','core.js','style.css'])assert(fs.existsSync(`dist/${asset}`));
+console.log(JSON.stringify({facets:50,selfReportItems:400,checkItems:12,tasks:36,challenges:8,optionBalance:'9/9/9/9',checks:'coverage,reverse scoring,missing data,Brier,roundtrip,invalid import,content schema',status:'passed'}));

@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.openai/
+.sites-runtime/
+__pycache__/
+*.pyc
+.DS_Store
+ATLAS-answers-*.json
+ATLAS-report-*.md
